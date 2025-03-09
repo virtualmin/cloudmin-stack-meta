@@ -3,7 +3,7 @@ Priority: optional
 Homepage: https://github.com/virtualmin/cloudmin-stack-meta
 Standards-Version: 3.9.2
 
-Package: cloudmin-kvm
+Package: cloudmin-kvm-stack
 Version: 1.0.0
 Maintainer: Ilia Ross <ilia@virtualmin.com>
 Depends: bind9, dnsutils, bridge-utils, ca-certificates, ebtables, qemu-system-arm, lsof, openssh-client, openssl, libcrypt-ssleay-perl, libdbd-mysql-perl, libjson-pp-perl, libjson-xs-perl, liblog-log4perl-perl, liblwp-protocol-https-perl, perl, libxml-simple-perl, psmisc, quota, unzip, zip
