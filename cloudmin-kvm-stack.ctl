@@ -1,7 +1,7 @@
 Section: admin
 Priority: optional
 Homepage: https://github.com/virtualmin/cloudmin-stack-meta
-Standards-Version: 3.9.2
+Standards-Version: 4.5.1
 
 Package: cloudmin-kvm-stack
 Version: 1.0.0
