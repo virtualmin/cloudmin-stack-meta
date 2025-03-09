@@ -6,7 +6,7 @@ Standards-Version: 3.9.2
 Package: cloudmin-kvm-stack
 Version: 1.0.0
 Maintainer: Ilia Ross <ilia@virtualmin.com>
-Depends: bind9, dnsutils, bridge-utils, ca-certificates, ebtables, qemu-system-arm, lsof, openssh-client, openssl, libcrypt-ssleay-perl, libdbd-mysql-perl, libjson-pp-perl, libjson-xs-perl, liblog-log4perl-perl, liblwp-protocol-https-perl, perl, libxml-simple-perl, psmisc, quota, unzip, zip
+Depends: bind9, dnsutils, bridge-utils, ca-certificates, ebtables, qemu-system, lsof, openssh-client, openssl, libcrypt-ssleay-perl, libdbd-mysql-perl, libjson-pp-perl, libjson-xs-perl, liblog-log4perl-perl, liblwp-protocol-https-perl, perl, libxml-simple-perl, psmisc, quota, unzip, zip
 Recommends: awscli, bzip2, certbot, cron, etckeeper, fail2ban, firewalld, lm-sensors, logrotate, p7zip-full, parted, libconfig-inifiles-perl, libio-tty-perl, postfix, python-is-python3, rsync, tar, whois, xz-utils
 Architecture: all
 Description: Installs required dependencies for the stack
