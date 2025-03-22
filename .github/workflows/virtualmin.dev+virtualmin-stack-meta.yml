@@ -7,7 +7,6 @@ on:
   release:
     types:
       - published
-      - edited
 
 env:
   PKG_RELEASE: "1"
