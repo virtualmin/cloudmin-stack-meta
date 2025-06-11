@@ -9,10 +9,6 @@ on:
       - published
 
 env:
-  PKG_RELEASE: "1"
-  PKG_SUMMARY: "Installs required dependencies for the stack"
-  PKG_DESC: "A dummy package designed to pull in all required dependencies. Together with the \"cloudmin-core\" package, it installs everything needed for the selected stack."
-  PKG_HOMEPAGE: "https://github.com/virtualmin/cloudmin-stack-meta"
   IS_RELEASE: ${{ github.event_name == 'release' }}
 
   BUILD_DEPS: "tar curl gzip dpkg-dev fakeroot build-essential coreutils"
@@ -59,32 +55,55 @@ jobs:
 
           # Parse debian control and build packages
           while IFS= read -r line; do
-              result+=("$line")
+            case $line in
+              PACKAGE_START)
+                unset pkg_name pkg_version pkg_release pkg_depends pkg_recommends \
+                      pkg_suggests pkg_replaces pkg_homepage pkg_summary \
+                      pkg_description
+                ;;
+
+              PACKAGE_END)
+                [[ $pkg_name && $pkg_version ]] || continue
+
+                decoded_description=
+                [[ ${pkg_description:-} ]] && \
+                  decoded_description=$(echo "$pkg_description" | base64 --decode)
+
+                build_native_package \
+                  --architectures  "noarch"                   \
+                  --target-dir     "$ROOT_REPOS"              \
+                  --base-name      "$pkg_name"                \
+                  --version        "$pkg_version"             \
+                  --release        "${pkg_release:-1}"        \
+                  --depends        "${pkg_depends:-}"         \
+                  --recommends     "${pkg_recommends:-}"      \
+                  --suggests       "${pkg_suggests:-}"        \
+                  --replaces       "${pkg_replaces:-}"        \
+                  --skip           rpm                        \
+                  --description    "${decoded_description:-}" \
+                  --homepage       "${pkg_homepage:-}"
+                ;;
+
+              *=*)
+                # split the key-value safely
+                key=${line%%=*}
+                val=${line#*=}
+
+                case $key in
+                  name)          pkg_name=$val ;;
+                  version)       pkg_version=$val ;;
+                  release)       pkg_release=$val ;;
+                  depends)       pkg_depends=$val ;;
+                  recommends)    pkg_recommends=$val ;;
+                  suggests)      pkg_suggests=$val ;;
+                  replaces)      pkg_replaces=$val ;;
+                  homepage)      pkg_homepage=$val ;;
+                  summary)       pkg_summary=$val ;;
+                  description)   pkg_description=$val ;;
+                esac
+                ;;
+            esac
           done < <(parse_debian_control "." "$testing")
-          
-          for ((i = 0; i < ${#result[@]}; i += 6)); do
-              pkg_name="${result[i]}"
-              pkg_version="${result[i+1]}"
-              pkg_depends="${result[i+2]}"
-              pkg_recommends="${result[i+3]}"
-              pkg_suggests="${result[i+4]}"
-              pkg_replaces="${result[i+5]}"
-          
-              build_native_package \
-                  --architectures noarch \
-                  --target-dir "$ROOT_REPOS" \
-                  --base-name "$pkg_name" \
-                  --version "$pkg_version" \
-                  --release "${{ env.PKG_RELEASE }}" \
-                  --depends "$pkg_depends" \
-                  --recommends "$pkg_recommends" \
-                  --suggests "$pkg_suggests" \
-                  --replaces "$pkg_replaces" \
-                  --skip rpm \
-                  --summary "${{ env.PKG_SUMMARY }}" \
-                  --description "${{ env.PKG_DESC }}" \
-                  --homepage "${{ env.PKG_HOMEPAGE }}"
-          done
           
           # Upload and sign
           upload_list=("$ROOT_REPOS/"*)
