@@ -49,10 +49,11 @@ jobs:
           
           # Check testing flag
           testing=$([[ "${{ env.IS_RELEASE }}" == "false" ]] && echo "--testing" || echo "")
-          prerelease=$([[ "${{ env.IS_PRERELEASE }}" == "true" ]] && echo "--prerelease" || echo "")
-          
+
           # Bootstrap build
-          source bootstrap.bash "$testing" "$prerelease"
+          source bootstrap.bash \
+            $([[ "$IS_RELEASE" == "true" ]] && echo "--release" || echo "--testing") \
+            $([[ "$IS_PRERELEASE" == "true" ]] && echo "--prerelease")  
 
           # Parse debian control and build packages
           while IFS= read -r line; do
