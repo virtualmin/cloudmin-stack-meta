@@ -62,7 +62,7 @@ jobs:
               PACKAGE_START)
                 unset pkg_name pkg_version pkg_release pkg_depends pkg_recommends \
                       pkg_suggests pkg_replaces pkg_homepage pkg_summary \
-                      pkg_description
+                      pkg_description pkg_architecture
                 ;;
 
               PACKAGE_END)
@@ -72,8 +72,14 @@ jobs:
                 [[ ${pkg_description:-} ]] && \
                   decoded_description=$(echo "$pkg_description" | base64 --decode)
 
+                # Translate Debian architecture names for the shared builder.
+                case "${pkg_architecture:-all}" in
+                  amd64) pkg_architecture=x64 ;;
+                  all) pkg_architecture=noarch ;;
+                esac
+
                 build_native_package \
-                  --architectures  "noarch"                   \
+                  --architectures  "$pkg_architecture"                   \
                   --target-dir     "$ROOT_REPOS"              \
                   --base-name      "$pkg_name"                \
                   --version        "$pkg_version"             \
@@ -93,6 +99,7 @@ jobs:
                 val=${line#*=}
 
                 case $key in
+                  architecture)  pkg_architecture=$val ;;
                   name)          pkg_name=$val ;;
                   version)       pkg_version=$val ;;
                   release)       pkg_release=$val ;;
